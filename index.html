@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Badini Dict — قامووس</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =============================================
+       DESIGN TOKENS
+    ============================================= */
+    :root {
+      --bg:          #0f0e17;
+      --surface:     #1a1828;
+      --surface-2:   #231f35;
+      --border:      #2e2a45;
+      --border-glow: #6c63ff55;
+
+      --accent-1:  #6c63ff;   /* electric violet */
+      --accent-2:  #ff6b6b;   /* coral red       */
+      --accent-3:  #ffd166;   /* golden yellow   */
+      --accent-4:  #06d6a0;   /* mint green      */
+      --accent-5:  #f72585;   /* hot pink        */
+
+      --text-primary:   #f0eeff;
+      --text-secondary: #9b97b8;
+      --text-muted:     #5c5878;
+
+      --radius-sm: 10px;
+      --radius-md: 18px;
+      --radius-lg: 28px;
+      --radius-xl: 40px;
+
+      --shadow-card: 0 8px 40px rgba(108, 99, 255, 0.18), 0 2px 8px rgba(0,0,0,0.5);
+      --shadow-btn:  0 4px 20px rgba(108, 99, 255, 0.35);
+
+      --transition: 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+      --transition-fast: 0.15s ease;
+    }
+
+    /* AMOLED dark mode — true black */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:        #000000;
+        --surface:   #0d0d12;
+        --surface-2: #141420;
+        --border:    #1e1c2e;
+      }
+    }
+
+    /* =============================================
+       RESET & BASE
+    ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100dvh;
+      overflow-x: hidden;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* =============================================
+       BACKGROUND NOISE & GLOW ORBS
+    ============================================= */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% -10%, rgba(108, 99, 255, 0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 85% 110%, rgba(247, 37, 133, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* =============================================
+       LAYOUT WRAPPER
+    ============================================= */
+    .app-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 0 18px;
+    }
+
+    /* =============================================
+       HEADER
+    ============================================= */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 52px 0 28px;
+    }
+
+    .logo-block .logo-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.5px;
+      line-height: 1;
+      color: var(--text-primary);
+    }
+
+    .logo-block .logo-sub {
+      font-family: 'Noto Naskh Arabic', serif;
+      font-size: 0.85rem;
+      color: var(--accent-1);
+      direction: rtl;
+      margin-top: 2px;
+      display: block;
+    }
+
+    .logo-pip {
+      display: inline-block;
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: var(--accent-1);
+      box-shadow: 0 0 10px var(--accent-1);
+      margin-right: 6px;
+      animation: pulse-pip 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulse-pip {
+      0%, 100% { transform: scale(1);   opacity: 1;    }
+      50%       { transform: scale(1.5); opacity: 0.7; }
+    }
+
+    .header-badge {
+      background: var(--surface-2);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    /* =============================================
+       SEARCH BAR
+    ============================================= */
+    .search-section { position: relative; margin-bottom: 32px; }
+
+    .search-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 20px;
+      width: 22px; height: 22px;
+      color: var(--text-muted);
+      pointer-events: none;
+      transition: color var(--transition-fast);
+      flex-shrink: 0;
+      z-index: 2;
+    }
+
+    #searchInput {
+      flex: 1;
+      width: 100%;
+      padding: 19px 20px 19px 54px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      background: var(--surface);
+      border: 2.5px solid var(--border);
+      border-radius: var(--radius-xl);
+      outline: none;
+      transition:
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        background var(--transition-fast);
+      -webkit-appearance: none;
+    }
+
+    #searchInput::placeholder { color: var(--text-muted); }
+
+    #searchInput:focus {
+      border-color: var(--accent-1);
+      box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.18), var(--shadow-card);
+      background: var(--surface-2);
+    }
+
+    #searchInput:focus ~ .search-icon,
+    .search-container:focus-within .search-icon { color: var(--accent-1); }
+
+    .search-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 11px 20px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent-1), #8b5cf6);
+      border: none;
+      border-radius: var(--radius-xl);
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), opacity var(--transition-fast);
+      box-shadow: var(--shadow-btn);
+    }
+
+    .search-btn:hover { transform: translateY(-50%) scale(1.05); box-shadow: 0 6px 28px rgba(108, 99, 255, 0.5); }
+    .search-btn:active { transform: translateY(-50%) scale(0.95); }
+
+    /* Hint chips */
+    .search-hints {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      padding-left: 4px;
+    }
+
+    .hint-chip {
+      padding: 5px 13px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all var(--transition);
+      user-select: none;
+    }
+
+    .hint-chip:hover, .hint-chip:active {
+      border-color: var(--accent-1);
+      color: var(--accent-1);
+      background: rgba(108, 99, 255, 0.1);
+      transform: scale(1.06);
+    }
+
+    /* =============================================
+       EMPTY STATE / WORD OF THE DAY
+    ============================================= */
+    #emptyState {
+      animation: fadeSlideUp 0.5s ease both;
+    }
+
+    .wotd-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent-3);
+      margin-bottom: 14px;
+    }
+
+    .wotd-label::before {
+      content: '';
+      display: inline-block;
+      width: 18px; height: 2.5px;
+      background: var(--accent-3);
+      border-radius: 2px;
+    }
+
+    .wotd-card {
+      background: var(--surface);
+      border: 2.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 22px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wotd-card::after {
+      content: '⭐';
+      position: absolute;
+      right: 18px;
+      top: 18px;
+      font-size: 1.6rem;
+      opacity: 0.15;
+    }
+
+    .wotd-word {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+
+    .wotd-prompt {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    .wotd-divider {
+      height: 1.5px;
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-5), transparent);
+      border-radius: 2px;
+      margin: 16px 0;
+      opacity: 0.5;
+    }
+
+    .wotd-badini {
+      font-family: 'Noto Naskh Arabic', serif;
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      direction: rtl;
+      text-align: right;
+      line-height: 1.7;
+    }
+
+    /* Instruction card below */
+    .instruction-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .instruction-tile {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 14px;
+      text-align: center;
+    }
+
+    .instruction-tile .tile-icon { font-size: 1.5rem; display: block; margin-bottom: 6px; }
+
+    .instruction-tile .tile-text {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* =============================================
+       RESULT CARD — THE GAME CARD
+    ============================================= */
+    #resultCard {
+      display: none;
+      animation: cardEntrance 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+    }
+
+    #resultCard.visible { display: block; }
+
+    @keyframes cardEntrance {
+      from { opacity: 0; transform: translateY(28px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0)   scale(1);    }
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+
+    .game-card {
+      background: var(--surface);
+      border: 2.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Colored top stripe */
+    .card-stripe {
+      height: 5px;
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-5), var(--accent-3));
+    }
+
+    /* Card header */
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 20px 20px 0;
+      gap: 12px;
+    }
+
+    .word-block { flex: 1; min-width: 0; }
+
+    .result-word {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      color: var(--text-primary);
+      line-height: 1;
+      word-break: break-word;
+    }
+
+    /* Level badge */
+    .level-badge {
+      flex-shrink: 0;
+      padding: 6px 13px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 800;
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.5px;
+      border: 2.5px solid;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* Level color variants */
+    .level-a1 { background: rgba(6, 214, 160, 0.15);  color: #06d6a0; border-color: #06d6a0; }
+    .level-a2 { background: rgba(6, 214, 160, 0.1);   color: #06d6a0; border-color: #06d6a0; }
+    .level-b1 { background: rgba(253, 209, 102, 0.15); color: #ffd166; border-color: #ffd166; }
+    .level-b2 { background: rgba(253, 209, 102, 0.1);  color: #ffd166; border-color: #ffd166; }
+    .level-c1 { background: rgba(247, 37, 133, 0.15);  color: #f72585; border-color: #f72585; }
+    .level-c2 { background: rgba(247, 37, 133, 0.1);   color: #f72585; border-color: #f72585; }
+
+    /* Phonetics */
+    .phonetics-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 12px 20px 0;
+    }
+
+    .phonetic-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 13px;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .phonetic-flag {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--accent-1);
+      background: rgba(108, 99, 255, 0.12);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .phonetic-ipa { letter-spacing: 0.5px; }
+
+    /* Card divider */
+    .card-divider {
+      height: 1.5px;
+      margin: 18px 20px;
+      background: var(--border);
+      border-radius: 2px;
+      position: relative;
+    }
+
+    .card-divider::before {
+      content: '◆';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 0.55rem;
+      padding: 0 8px;
+      letter-spacing: 4px;
+    }
+
+    /* Definitions */
+    .definitions-wrap { padding: 0 20px; }
+
+    .def-block { margin-bottom: 14px; }
+
+    .def-lang-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+
+    .def-lang-tag .lang-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .def-lang-tag.en .lang-dot { background: var(--accent-4); }
+    .def-lang-tag.bd .lang-dot { background: var(--accent-2); }
+
+    .def-text-en {
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      line-height: 1.65;
+      direction: ltr;
+    }
+
+    .def-text-bd {
+      font-family: 'Noto Naskh Arabic', serif;
+      font-size: 1.05rem;
+      color: var(--text-primary);
+      line-height: 1.9;
+      direction: rtl;
+      text-align: right;
+      unicode-bidi: embed;
+    }
+
+    /* Visual divider between EN and BD defs */
+    .def-mid-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 12px 0;
+    }
+
+    /* Example sentence */
+    .example-wrap {
+      margin: 0 20px 20px;
+      background: var(--surface-2);
+      border-left: 3.5px solid var(--accent-1);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 12px 14px;
+    }
+
+    .example-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: var(--accent-1);
+      margin-bottom: 5px;
+    }
+
+    .example-text {
+      font-size: 0.88rem;
+      font-style: italic;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Card footer with + button */
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px 20px;
+      border-top: 1.5px solid var(--border);
+      margin-top: 4px;
+    }
+
+    .card-footer-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .add-flashcard-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, var(--accent-1), #8b5cf6);
+      border: none;
+      border-radius: var(--radius-md);
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), filter var(--transition-fast);
+      box-shadow: var(--shadow-btn);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .add-flashcard-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.12);
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+    }
+
+    .add-flashcard-btn:hover { transform: scale(1.06); box-shadow: 0 6px 28px rgba(108, 99, 255, 0.55); }
+    .add-flashcard-btn:hover::before { opacity: 1; }
+    .add-flashcard-btn:active { transform: scale(0.95); }
+
+    .add-flashcard-btn .plus-icon {
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    /* Toast / snackbar for + button */
+    .toast {
+      position: fixed;
+      bottom: calc(30px + env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      padding: 11px 22px;
+      border-radius: var(--radius-xl);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      white-space: nowrap;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* =============================================
+       NOT FOUND STATE
+    ============================================= */
+    #notFound {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+      animation: fadeSlideUp 0.4s ease both;
+    }
+
+    #notFound.visible { display: block; }
+
+    .not-found-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+
+    .not-found-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .not-found-sub {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .not-found-sub strong {
+      color: var(--accent-2);
+      font-weight: 600;
+    }
+
+    /* =============================================
+       FOOTER
+    ============================================= */
+    .app-footer {
+      text-align: center;
+      padding: 32px 0 40px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    /* =============================================
+       SCROLLBAR
+    ============================================= */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* =============================================
+       UTILITY ANIMATIONS
+    ============================================= */
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position:  200% 0; }
+    }
+
+    .loading-shimmer {
+      background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: var(--radius-md);
+      height: 180px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-wrap">
+
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="logo-block">
+        <h1 class="logo-title">
+          <span class="logo-pip"></span>Badini Dict
+        </h1>
+        <span class="logo-sub">قامووسی بادینی</span>
+      </div>
+      <div class="header-badge">Phase 1 · MVP</div>
+    </header>
+
+    <!-- SEARCH -->
+    <section class="search-section">
+      <div class="search-container">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search a word in English…"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="none"
+          spellcheck="false"
+          enterkeyhint="search"
+          aria-label="Search English word"
+        />
+        <button class="search-btn" id="searchBtn" aria-label="Search">Go →</button>
+      </div>
+
+      <div class="search-hints" id="searchHints" aria-label="Quick search examples">
+        <span class="hint-chip" data-word="journey">journey</span>
+        <span class="hint-chip" data-word="light">light</span>
+        <span class="hint-chip" data-word="love">love</span>
+        <span class="hint-chip" data-word="mountain">mountain</span>
+        <span class="hint-chip" data-word="water">water</span>
+      </div>
+    </section>
+
+    <!-- EMPTY STATE: WORD OF THE DAY -->
+    <div id="emptyState">
+      <div class="wotd-label">Word of the Day</div>
+      <div class="wotd-card">
+        <div class="wotd-word" id="wotdWord">journey</div>
+        <p class="wotd-prompt" id="wotdPrompt">
+          Loading today's word…
+        </p>
+        <div class="wotd-divider"></div>
+        <div class="wotd-badini" id="wotdBadini" dir="rtl"></div>
+      </div>
+
+      <div class="instruction-row">
+        <div class="instruction-tile">
+          <span class="tile-icon">🔍</span>
+          <span class="tile-text">Type any English word to find its Badini meaning</span>
+        </div>
+        <div class="instruction-tile">
+          <span class="tile-icon">📇</span>
+          <span class="tile-text">Tap <strong>+</strong> on any card to save to flashcards (coming soon)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULT CARD -->
+    <div id="resultCard" role="region" aria-live="polite" aria-label="Dictionary result">
+      <div class="game-card">
+        <div class="card-stripe"></div>
+
+        <div class="card-header">
+          <div class="word-block">
+            <div class="result-word" id="resWord"></div>
+          </div>
+          <div class="level-badge" id="resLevel"></div>
+        </div>
+
+        <div class="phonetics-row" id="resPhonetics"></div>
+
+        <div class="card-divider"></div>
+
+        <div class="definitions-wrap">
+          <div class="def-block">
+            <div class="def-lang-tag en">
+              <span class="lang-dot"></span>English
+            </div>
+            <div class="def-text-en" id="resDefEn" dir="ltr"></div>
+          </div>
+
+          <div class="def-mid-divider"></div>
+
+          <div class="def-block">
+            <div class="def-lang-tag bd">
+              <span class="lang-dot"></span>Badini · بادینی
+            </div>
+            <div class="def-text-bd" id="resDefBd" dir="rtl" lang="ckb"></div>
+          </div>
+        </div>
+
+        <div class="example-wrap">
+          <div class="example-label">Example</div>
+          <div class="example-text" id="resExample"></div>
+        </div>
+
+        <div class="card-footer">
+          <span class="card-footer-meta" id="resId"></span>
+          <button class="add-flashcard-btn" id="addFlashcardBtn" aria-label="Add to flashcards">
+            <span class="plus-icon">+</span>
+            <span>Flashcard</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOT FOUND STATE -->
+    <div id="notFound" role="alert">
+      <span class="not-found-emoji">🔭</span>
+      <div class="not-found-title">Word not found</div>
+      <div class="not-found-sub">
+        Couldn't find <strong id="notFoundQuery"></strong> in the dictionary.<br/>
+        Check your spelling or try another word.
+      </div>
+    </div>
+
+    <footer class="app-footer">
+      Badini Dict &nbsp;·&nbsp; Phase 1 MVP &nbsp;·&nbsp; قامووسی بادینی
+    </footer>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /* =============================================
+       STATE
+    ============================================= */
+    let dictionaryData = [];
+    let currentEntry   = null;
+
+    /* =============================================
+       ELEMENTS
+    ============================================= */
+    const searchInput      = document.getElementById('searchInput');
+    const searchBtn        = document.getElementById('searchBtn');
+    const emptyState       = document.getElementById('emptyState');
+    const resultCard       = document.getElementById('resultCard');
+    const notFound         = document.getElementById('notFound');
+    const notFoundQuery    = document.getElementById('notFoundQuery');
+    const resWord          = document.getElementById('resWord');
+    const resLevel         = document.getElementById('resLevel');
+    const resPhonetics     = document.getElementById('resPhonetics');
+    const resDefEn         = document.getElementById('resDefEn');
+    const resDefBd         = document.getElementById('resDefBd');
+    const resExample       = document.getElementById('resExample');
+    const resId            = document.getElementById('resId');
+    const addFlashcardBtn  = document.getElementById('addFlashcardBtn');
+    const toast            = document.getElementById('toast');
+    const wotdWord         = document.getElementById('wotdWord');
+    const wotdPrompt       = document.getElementById('wotdPrompt');
+    const wotdBadini       = document.getElementById('wotdBadini');
+
+    /* =============================================
+       FETCH DICTIONARY
+    ============================================= */
+    async function loadDictionary() {
+      try {
+        const res  = await fetch('./dictionary.json');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        dictionaryData = json.dictionary || [];
+        populateWordOfDay();
+      } catch (err) {
+        console.warn('dictionary.json not loaded:', err.message);
+        // Fallback demo data so the UI works without the file
+        dictionaryData = [
+          {
+            id: "001",
+            word: "journey",
+            level: "A2",
+            phonetics: { us: "/ˈdʒɝː.ni/", uk: "/ˈdʒɜː.ni/" },
+            definitions: {
+              english: "An act of traveling from one place to another.",
+              badini: "سەفەرکرن، چوون ژ جهەکێ بۆ جهەکێ دی."
+            },
+            example: "They went on a long journey across the mountains."
+          }
+        ];
+        populateWordOfDay();
+      }
+    }
+
+    /* =============================================
+       WORD OF THE DAY
+    ============================================= */
+    function populateWordOfDay() {
+      if (!dictionaryData.length) return;
+      // Deterministically pick based on day-of-year
+      const dayIndex = Math.floor(Date.now() / 86400000) % dictionaryData.length;
+      const entry    = dictionaryData[dayIndex];
+      wotdWord.textContent   = entry.word;
+      wotdPrompt.textContent = entry.definitions.english;
+      wotdBadini.textContent = entry.definitions.badini;
+    }
+
+    /* =============================================
+       SEARCH LOGIC
+    ============================================= */
+    function search(rawQuery) {
+      const query = rawQuery.trim().toLowerCase();
+      if (!query) return;
+
+      const entry = dictionaryData.find(
+        e => e.word.toLowerCase() === query
+      );
+
+      // Hide all states cleanly
+      emptyState.style.display  = 'none';
+      resultCard.classList.remove('visible');
+      notFound.classList.remove('visible');
+
+      if (entry) {
+        renderCard(entry);
+        // Small tick so the animation re-fires
+        requestAnimationFrame(() => {
+          resultCard.classList.add('visible');
+        });
+      } else {
+        notFoundQuery.textContent = `"${rawQuery.trim()}"`;
+        notFound.classList.add('visible');
+      }
+    }
+
+    /* =============================================
+       RENDER CARD
+    ============================================= */
+    function renderCard(entry) {
+      currentEntry = entry;
+
+      resWord.textContent = entry.word;
+
+      // Level badge — pick color class
+      const lvl = (entry.level || '').toUpperCase();
+      resLevel.textContent = lvl;
+      resLevel.className   = 'level-badge level-' + lvl.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+      // Phonetics
+      resPhonetics.innerHTML = '';
+      if (entry.phonetics?.us) {
+        resPhonetics.appendChild(makePhoneticChip('US', entry.phonetics.us));
+      }
+      if (entry.phonetics?.uk) {
+        resPhonetics.appendChild(makePhoneticChip('UK', entry.phonetics.uk));
+      }
+
+      // Definitions
+      resDefEn.textContent = entry.definitions?.english || '';
+      resDefBd.textContent = entry.definitions?.badini  || '';
+
+      // Example
+      resExample.textContent = entry.example || '';
+
+      // Footer meta
+      resId.textContent = entry.id ? `#${entry.id}` : '';
+    }
+
+    function makePhoneticChip(region, ipa) {
+      const chip = document.createElement('div');
+      chip.className = 'phonetic-chip';
+      chip.innerHTML = `
+        <span class="phonetic-flag">${region}</span>
+        <span class="phonetic-ipa">${escapeHTML(ipa)}</span>
+      `;
+      return chip;
+    }
+
+    function escapeHTML(str) {
+      const d = document.createElement('div');
+      d.appendChild(document.createTextNode(str));
+      return d.innerHTML;
+    }
+
+    /* =============================================
+       FLASHCARD BUTTON
+    ============================================= */
+    addFlashcardBtn.addEventListener('click', () => {
+      if (!currentEntry) return;
+      showToast(`✨ "${currentEntry.word}" saved to flashcards (coming soon)`);
+    });
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => toast.classList.remove('show'), 2800);
+    }
+
+    /* =============================================
+       EVENTS
+    ============================================= */
+    searchBtn.addEventListener('click', () => search(searchInput.value));
+
+    searchInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') search(searchInput.value);
+    });
+
+    // Hint chips
+    document.getElementById('searchHints').addEventListener('click', e => {
+      const chip = e.target.closest('.hint-chip');
+      if (!chip) return;
+      const word = chip.dataset.word;
+      searchInput.value = word;
+      search(word);
+      searchInput.blur();
+    });
+
+    /* =============================================
+       INIT
+    ============================================= */
+    loadDictionary();
+  </script>
+</body>
+</html>
