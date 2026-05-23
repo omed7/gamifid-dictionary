@@ -1,0 +1,94 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2026-05-23",
+    "totalWords": 5
+  },
+  "words": [
+    {
+      "id": "eng-bad-001",
+      "word": "water",
+      "difficulty": "A2",
+      "phonetics": {
+        "us": "/ˈwɔtər/",
+        "uk": "/ˈwɔːtə/"
+      },
+      "definitions": {
+        "en": "A clear liquid that falls from the sky as rain and is necessary for animal and plant life.",
+        "badini": "شلەیەکێ بێ ڕەنگە کو ژ ئەسمانی وەک باران دبارت و بۆ ژیانا ئاژەل و رووەکان یا پێدڤیە."
+      },
+      "examples": {
+        "en": "I drink a glass of water every morning.",
+        "badini": "ئەز هەر سپێدە پەرداخەکا ئاڤێ ڤەدخۆم."
+      }
+    },
+    {
+      "id": "eng-bad-002",
+      "word": "challenge",
+      "difficulty": "B1",
+      "phonetics": {
+        "us": "/ˈtʃælɪndʒ/",
+        "uk": "/ˈtʃælɪndʒ/"
+      },
+      "definitions": {
+        "en": "A task or situation that tests someone's abilities.",
+        "badini": "کارەک یان رەوشەک کو شیانێن کەسەکێ دئێختە د تاقیکرنێ دا."
+      },
+      "examples": {
+        "en": "Learning a new language is a great challenge.",
+        "badini": "فێربوونا زمانەکێ نوی بەرەنگارییەكا مەزنە."
+      }
+    },
+    {
+      "id": "eng-bad-003",
+      "word": "ambiguous",
+      "difficulty": "B2",
+      "phonetics": {
+        "us": "/æmˈbɪɡjuəs/",
+        "uk": "/æmˈbɪɡjʊəs/"
+      },
+      "definitions": {
+        "en": "Open to more than one interpretation; having a double meaning.",
+        "badini": "بۆ پتر ژ ئێک رامانێ دیتنێ ڤەکرییە؛ خودان رامانەکا نەدیارە."
+      },
+      "examples": {
+        "en": "The ending of the movie was ambiguous.",
+        "badini": "دووماهیا فیلمی یا نەدیار بوو."
+      }
+    },
+    {
+      "id": "eng-bad-004",
+      "word": "resilient",
+      "difficulty": "C1",
+      "phonetics": {
+        "us": "/rɪˈzɪliənt/",
+        "uk": "/rɪˈzɪlɪənt/"
+      },
+      "definitions": {
+        "en": "Able to withstand or recover quickly from difficult conditions.",
+        "badini": "شیانا بەرگەگرتنێ یان زوو ڤەگەریانا بۆ رەوشا ئاسایی پشتي رەوشێن دژوار."
+      },
+      "examples": {
+        "en": "Children are often incredibly resilient in the face of adversity.",
+        "badini": "زارۆك د دەمێ سەختییان دا گەلەك خۆڕاگرن."
+      }
+    },
+    {
+      "id": "eng-bad-005",
+      "word": "ephemeral",
+      "difficulty": "C2",
+      "phonetics": {
+        "us": "/ɪˈfɛmərəl/",
+        "uk": "/ɪˈfɛmərəl/"
+      },
+      "definitions": {
+        "en": "Lasting for a very short time.",
+        "badini": "بۆ دەمەکێ گەلەک کورت دمینت."
+      },
+      "examples": {
+        "en": "Fame in the modern era is often ephemeral.",
+        "badini": "ناڤداری د سەردەمێ نوی دا گەلەك جاران یا دەمکییە."
+      }
+    }
+  ]
+}
